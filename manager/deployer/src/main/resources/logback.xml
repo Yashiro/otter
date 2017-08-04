@@ -8,10 +8,10 @@
 	</appender>
 	<appender name="WEBX-ROOT" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/manager.log</file>
+        <file>/apps/logs/otter/manager/manager.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/manager-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter／manager/%d{yyyy-MM-dd}/manager-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
@@ -26,10 +26,10 @@
 	
 	<appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/communication.log</file>
+        <file>/apps/logs/otter/manager/communication.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/communication-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter/manager/%d{yyyy-MM-dd}/communication-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
@@ -44,10 +44,10 @@
 	
 	<appender name="ALARM" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/alarm.log</file>
+        <file>/apps/logs/otter/manager/alarm.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/alarm-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter/manager/%d{yyyy-MM-dd}/alarm-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
@@ -61,10 +61,10 @@
 	</appender>
 	<appender name="monitorInfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/monitor_info.log</file>
+        <file>/apps/logs/otter/manager/monitor_info.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/monitor_info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter/manager/%d{yyyy-MM-dd}/monitor_info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
@@ -78,10 +78,10 @@
 	</appender>
 	<appender name="monitorTrigger" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/monitor_trigger.log</file>
+        <file>/apps/logs/otter/manager/monitor_trigger.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/monitor_trigger-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter/manager/%d{yyyy-MM-dd}/monitor_trigger-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
@@ -95,10 +95,10 @@
 	</appender>
 	<appender name="position" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<append>true</append>
-        <file>../logs/position.log</file>
+        <file>/apps/logs/otter/manager/position.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- daily rollover -->
-          <fileNamePattern>../logs/%d{yyyy-MM-dd}/position-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+          <fileNamePattern>/apps/logs/otter/manager/%d{yyyy-MM-dd}/position-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
 		  <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
             <!-- or whenever the file size reaches 100MB -->
             <maxFileSize>30MB</maxFileSize>
