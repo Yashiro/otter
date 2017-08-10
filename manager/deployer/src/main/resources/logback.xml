@@ -143,6 +143,6 @@
     
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-        <appender-ref ref="WEBX-ROOT" />
+        <!--<appender-ref ref="WEBX-ROOT" />-->
 	</root>
 </configuration>
