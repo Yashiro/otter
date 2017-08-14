@@ -16,9 +16,9 @@
         	<list>
         		<value>channelEvent</value>
         		<value>pipelineEvent</value>
-        		<value>nodeEvent</value>
+        		<!--<value>nodeEvent</value>-->
         		
-        		<value>mainStemEvent</value>
+        		<!--<value>mainStemEvent</value>-->
         		<value>selectEvent</value>
         		<value>extractEvent</value>
         		<value>transformEvent</value>
