@@ -332,6 +332,12 @@
 				<version>0.10.0.1</version>
 			</dependency>
 			<!-- Kafka End -->
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.16.6</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
