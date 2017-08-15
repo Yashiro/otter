@@ -35,7 +35,11 @@ public enum DataMediaType {
     /** napoli */
     NAPOLI,
     /** diamond push for us */
-    DIAMOND_PUSH;
+    DIAMOND_PUSH,
+
+    KAFKA,
+
+    ;
 
     public boolean isMysql() {
         return this.equals(DataMediaType.MYSQL);
@@ -68,4 +72,6 @@ public enum DataMediaType {
     public boolean isDiamondPush() {
         return this.equals(DataMediaType.DIAMOND_PUSH);
     }
+
+    public boolean isKafka() { return this.equals(DataMediaType.KAFKA); }
 }

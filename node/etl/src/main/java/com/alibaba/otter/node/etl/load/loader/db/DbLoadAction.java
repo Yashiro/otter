@@ -16,49 +16,12 @@
 
 package com.alibaba.otter.node.etl.load.loader.db;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.ddlutils.model.Column;
-import org.apache.ddlutils.model.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DeadlockLoserDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.StatementCallback;
-import org.springframework.jdbc.core.StatementCreatorUtils;
-import org.springframework.jdbc.support.lob.LobCreator;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-
 import com.alibaba.otter.node.common.config.ConfigClientService;
 import com.alibaba.otter.node.etl.common.db.dialect.DbDialect;
 import com.alibaba.otter.node.etl.common.db.dialect.DbDialectFactory;
 import com.alibaba.otter.node.etl.common.db.dialect.mysql.MysqlDialect;
 import com.alibaba.otter.node.etl.common.db.utils.SqlUtils;
+import com.alibaba.otter.node.etl.common.kafka.CommitQueue;
 import com.alibaba.otter.node.etl.load.exception.LoadException;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker.LoadCounter;
@@ -75,11 +38,31 @@ import com.alibaba.otter.shared.common.model.config.data.DataMediaPair;
 import com.alibaba.otter.shared.common.model.config.data.db.DbMediaSource;
 import com.alibaba.otter.shared.common.model.config.pipeline.Pipeline;
 import com.alibaba.otter.shared.common.utils.thread.NamedThreadFactory;
-import com.alibaba.otter.shared.etl.model.EventColumn;
-import com.alibaba.otter.shared.etl.model.EventData;
-import com.alibaba.otter.shared.etl.model.EventType;
-import com.alibaba.otter.shared.etl.model.Identity;
-import com.alibaba.otter.shared.etl.model.RowBatch;
+import com.alibaba.otter.shared.etl.model.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.ddlutils.model.Column;
+import org.apache.ddlutils.model.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.support.lob.LobCreator;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * 数据库load的执行入口
@@ -149,7 +132,7 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
                     controller.await(weight.intValue());
                     // 处理同一个weight下的数据
                     List<EventData> items = buckets.getItems(weight);
-                    logger.debug("##start load for weight:" + weight);
+                    logger.info("##start load for weight:" + weight);
                     // 预处理下数据
 
                     // 进行一次数据合并，合并相同pk的多次I/U/D操作
@@ -157,10 +140,11 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
                     // 按I/U/D进行归并处理
                     DbLoadData loadData = new DbLoadData();
                     doBefore(items, context, loadData);
+
                     // 执行load操作
                     doLoad(context, loadData);
                     controller.single(weight.intValue());
-                    logger.debug("##end load for weight:" + weight);
+                    logger.info("##end load for weight:" + weight);
                 }
             }
             interceptor.commit(context);
@@ -230,6 +214,9 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
     }
 
     private void doLoad(final DbLoadContext context, DbLoadData loadData) {
+        // 提交数据到Kafka
+        CommitQueue.sourceDataTransforQueue(loadData);
+
         // 优先处理delete,可以利用batch优化
         List<List<EventData>> batchDatas = new ArrayList<List<EventData>>();
         for (TableLoadData tableData : loadData.getTables()) {
