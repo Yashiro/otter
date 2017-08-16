@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,7 +26,8 @@ public class CommitQueue {
 
     private static Logger LOG = LoggerFactory.getLogger(CommitQueue.class);
 
-    public static void sourceDataTransforQueue(DbLoadData dbLoadData) {
+    public void sourceDataTransforQueue(DbLoadData dbLoadData) {
+
         Properties props = new Properties();
         props.put("bootstrap.servers", "10.9.20.110:9092");
 
@@ -33,7 +35,6 @@ public class CommitQueue {
         props.put("linger.ms", 1);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//        props.put("partitioner.class", "com.alibaba.otter.node.etl.common.kafka.AstroPartition");
 
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
 
@@ -53,6 +54,7 @@ public class CommitQueue {
                         columns.put(delEventColumn.getColumnName(), delEventColumn.getColumnValue());
                     }
                     queueContent.setColumns(columns);
+                    queueContent.setCurrentTime(new Date());
 
                     ProducerRecord<String, String> record = new ProducerRecord<String, String>(delEventData.getTableName(), null, JSON.toJSONString(queueContent));
                     send(producer, record);
@@ -70,6 +72,7 @@ public class CommitQueue {
                         columns.put(addEventColumn.getColumnName(), addEventColumn.getColumnValue());
                     }
                     queueContent.setColumns(columns);
+                    queueContent.setCurrentTime(new Date());
 
                     ProducerRecord<String, String> record = new ProducerRecord<String, String>(addEventData.getTableName(), null, JSON.toJSONString(queueContent));
                     send(producer, record);
@@ -87,6 +90,7 @@ public class CommitQueue {
                         columns.put(updEventColumn.getColumnName(), updEventColumn.getColumnValue());
                     }
                     queueContent.setColumns(columns);
+                    queueContent.setCurrentTime(new Date());
 
                     ProducerRecord<String, String> record = new ProducerRecord<String, String>(updEventData.getTableName(), null, JSON.toJSONString(queueContent));
                     send(producer, record);

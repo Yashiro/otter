@@ -108,6 +108,10 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.11</artifactId>
 		</dependency>
-		<!-- Kafka End -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <!-- Kafka End -->
 	</dependencies>
 </project>

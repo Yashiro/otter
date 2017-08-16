@@ -16,15 +16,12 @@
 
 package com.alibaba.otter.node.etl.common.db.dialect;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.sql.DataSource;
-
+import com.alibaba.otter.node.etl.common.datasource.DataSourceService;
+import com.alibaba.otter.shared.common.model.config.data.db.DbMediaSource;
+import com.google.common.base.Function;
+import com.google.common.collect.GenericMapMaker;
+import com.google.common.collect.MapEvictionListener;
+import com.google.common.collect.MapMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -32,12 +29,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.alibaba.otter.node.etl.common.datasource.DataSourceService;
-import com.alibaba.otter.shared.common.model.config.data.db.DbMediaSource;
-import com.google.common.base.Function;
-import com.google.common.collect.GenericMapMaker;
-import com.google.common.collect.MapEvictionListener;
-import com.google.common.collect.MapMaker;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author jianghang 2011-10-27 下午02:12:06
@@ -73,12 +71,14 @@ public class DbDialectFactory implements DisposableBean {
 
             public Map<DbMediaSource, DbDialect> apply(final Long pipelineId) {
                 // 构建第二层map
-                return new MapMaker().makeComputingMap(new Function<DbMediaSource, DbDialect>() {
+                Map<DbMediaSource, DbDialect> map = new MapMaker().makeComputingMap(new Function<DbMediaSource, DbDialect>() {
 
+                    @Override
                     public DbDialect apply(final DbMediaSource source) {
                         DataSource dataSource = dataSourceService.getDataSource(pipelineId, source);
                         final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-                        return (DbDialect) jdbcTemplate.execute(new ConnectionCallback() {
+
+                        DbDialect dbDialect = (DbDialect) jdbcTemplate.execute(new ConnectionCallback() {
 
                             public Object doInConnection(Connection c) throws SQLException, DataAccessException {
                                 DatabaseMetaData meta = c.getMetaData();
@@ -105,9 +105,10 @@ public class DbDialectFactory implements DisposableBean {
                                 return dialect;
                             }
                         });
-
+                        return dbDialect;
                     }
                 });
+                return map;
             }
         });
 

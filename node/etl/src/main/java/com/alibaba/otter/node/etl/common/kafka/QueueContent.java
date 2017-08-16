@@ -1,10 +1,9 @@
 package com.alibaba.otter.node.etl.common.kafka;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.google.common.collect.Maps;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -22,5 +21,8 @@ public class QueueContent {
 
     @JSONField(ordinal = 3)
     private Map<String, String> columns;
+
+    @JSONField(ordinal = 4)
+    private Date currentTime;
 
 }

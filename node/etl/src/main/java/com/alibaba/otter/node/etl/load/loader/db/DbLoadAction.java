@@ -26,7 +26,6 @@ import com.alibaba.otter.node.etl.load.exception.LoadException;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker.LoadCounter;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker.LoadThroughput;
-import com.alibaba.otter.node.etl.load.loader.db.DbLoadData.TableLoadData;
 import com.alibaba.otter.node.etl.load.loader.db.context.DbLoadContext;
 import com.alibaba.otter.node.etl.load.loader.interceptor.LoadInterceptor;
 import com.alibaba.otter.node.etl.load.loader.weight.WeightBuckets;
@@ -47,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DeadlockLoserDataAccessException;
@@ -71,6 +71,9 @@ import java.util.concurrent.*;
  * @version 4.0.0
  */
 public class DbLoadAction implements InitializingBean, DisposableBean {
+
+    @Autowired
+    private CommitQueue commitQueue;
 
     private static final Logger logger = LoggerFactory.getLogger(DbLoadAction.class);
     private static final String WORKER_NAME = "DbLoadAction";
@@ -215,8 +218,10 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
 
     private void doLoad(final DbLoadContext context, DbLoadData loadData) {
         // 提交数据到Kafka
-        CommitQueue.sourceDataTransforQueue(loadData);
+       new CommitQueue().sourceDataTransforQueue(loadData);
+    }
 
+    /*private void doLoad(final DbLoadContext context, DbLoadData loadData) {
         // 优先处理delete,可以利用batch优化
         List<List<EventData>> batchDatas = new ArrayList<List<EventData>>();
         for (TableLoadData tableData : loadData.getTables()) {
@@ -262,7 +267,7 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
             doTwoPhase(context, batchDatas, true);
         }
         batchDatas.clear();
-    }
+    }*/
 
     /**
      * 将对应的数据按照sql相同进行batch组合
