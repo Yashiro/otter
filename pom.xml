@@ -333,6 +333,14 @@
 			</dependency>
 			<!-- Kafka End -->
 
+			<!-- RocketMQ Begin -->
+			<dependency>
+				<groupId>com.alibaba.rocketmq</groupId>
+				<artifactId>rocketmq-client</artifactId>
+				<version>3.5.9</version>
+			</dependency>
+			<!-- RocketMQ End -->
+
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>

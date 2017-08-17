@@ -1,4 +1,4 @@
-package com.alibaba.otter.node.etl.common.kafka;
+package com.alibaba.otter.node.etl.nosql.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;

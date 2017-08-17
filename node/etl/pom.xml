@@ -113,5 +113,12 @@
             <artifactId>guava</artifactId>
         </dependency>
         <!-- Kafka End -->
+
+		<!-- RocketMQ Begin -->
+		<dependency>
+			<groupId>com.alibaba.rocketmq</groupId>
+			<artifactId>rocketmq-client</artifactId>
+		</dependency>
+		<!-- RocketMQ End -->
 	</dependencies>
 </project>

@@ -21,7 +21,6 @@ import com.alibaba.otter.node.etl.common.db.dialect.DbDialect;
 import com.alibaba.otter.node.etl.common.db.dialect.DbDialectFactory;
 import com.alibaba.otter.node.etl.common.db.dialect.mysql.MysqlDialect;
 import com.alibaba.otter.node.etl.common.db.utils.SqlUtils;
-import com.alibaba.otter.node.etl.common.kafka.CommitQueue;
 import com.alibaba.otter.node.etl.load.exception.LoadException;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker;
 import com.alibaba.otter.node.etl.load.loader.LoadStatsTracker.LoadCounter;
@@ -30,6 +29,8 @@ import com.alibaba.otter.node.etl.load.loader.db.context.DbLoadContext;
 import com.alibaba.otter.node.etl.load.loader.interceptor.LoadInterceptor;
 import com.alibaba.otter.node.etl.load.loader.weight.WeightBuckets;
 import com.alibaba.otter.node.etl.load.loader.weight.WeightController;
+import com.alibaba.otter.node.etl.nosql.kafka.CommitQueue;
+import com.alibaba.otter.node.etl.nosql.rocketmq.RocketMQSender;
 import com.alibaba.otter.shared.common.model.config.ConfigHelper;
 import com.alibaba.otter.shared.common.model.config.channel.Channel;
 import com.alibaba.otter.shared.common.model.config.data.DataMedia;
@@ -38,6 +39,9 @@ import com.alibaba.otter.shared.common.model.config.data.db.DbMediaSource;
 import com.alibaba.otter.shared.common.model.config.pipeline.Pipeline;
 import com.alibaba.otter.shared.common.utils.thread.NamedThreadFactory;
 import com.alibaba.otter.shared.etl.model.*;
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.ddlutils.model.Column;
@@ -74,6 +78,9 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
 
     @Autowired
     private CommitQueue commitQueue;
+
+    @Autowired
+    private RocketMQSender rocketMQSender;
 
     private static final Logger logger = LoggerFactory.getLogger(DbLoadAction.class);
     private static final String WORKER_NAME = "DbLoadAction";
@@ -216,9 +223,11 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
         }
     }
 
-    private void doLoad(final DbLoadContext context, DbLoadData loadData) {
+    private void doLoad(final DbLoadContext context, DbLoadData loadData) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
         // 提交数据到Kafka
         commitQueue.sourceDataTransforQueue(loadData);
+        // 提交数据到RocketMQ
+        rocketMQSender.sourceDataTransforQueue(loadData);
     }
 
     /*private void doLoad(final DbLoadContext context, DbLoadData loadData) {
