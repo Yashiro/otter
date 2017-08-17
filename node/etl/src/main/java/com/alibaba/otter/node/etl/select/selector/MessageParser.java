@@ -16,20 +16,6 @@
 
 package com.alibaba.otter.node.etl.select.selector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.ddlutils.model.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.CanalEntry.Column;
 import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
@@ -54,6 +40,13 @@ import com.alibaba.otter.shared.etl.model.EventColumn;
 import com.alibaba.otter.shared.etl.model.EventColumnIndexComparable;
 import com.alibaba.otter.shared.etl.model.EventData;
 import com.alibaba.otter.shared.etl.model.EventType;
+import org.apache.commons.lang.StringUtils;
+import org.apache.ddlutils.model.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 /**
  * 数据对象解析
@@ -606,8 +599,8 @@ public class MessageParser {
      * 如果变更后的主键为空，直接从old中拷贝<br>
      * 如果变更前后的主键数目不相等，把old中存在而new中不存在的主键拷贝到new中.
      * 
-     * @param oldKeys
-     * @param newKeys
+     * @param oldKeyColumns
+     * @param keyColumns
      */
     private void checkUpdateKeyColumns(Map<String, EventColumn> oldKeyColumns, Map<String, EventColumn> keyColumns) {
         // 在变更前没有主键的情况
