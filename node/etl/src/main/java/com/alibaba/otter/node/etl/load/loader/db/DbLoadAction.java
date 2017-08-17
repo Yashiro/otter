@@ -218,7 +218,7 @@ public class DbLoadAction implements InitializingBean, DisposableBean {
 
     private void doLoad(final DbLoadContext context, DbLoadData loadData) {
         // 提交数据到Kafka
-       new CommitQueue().sourceDataTransforQueue(loadData);
+        commitQueue.sourceDataTransforQueue(loadData);
     }
 
     /*private void doLoad(final DbLoadContext context, DbLoadData loadData) {

@@ -11,6 +11,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
@@ -22,14 +24,17 @@ import java.util.Properties;
  * @author Andy Zhou
  * @date 2017/8/15
  */
+@Component
 public class CommitQueue {
 
     private static Logger LOG = LoggerFactory.getLogger(CommitQueue.class);
 
-    public void sourceDataTransforQueue(DbLoadData dbLoadData) {
+    @Value("${broker.list}")
+    private String brokerList;
 
+    public void sourceDataTransforQueue(DbLoadData dbLoadData) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "10.9.20.110:9092");
+        props.put("bootstrap.servers", brokerList);
 
         props.put("retries", 0);
         props.put("linger.ms", 1);
@@ -100,7 +105,7 @@ public class CommitQueue {
 
     }
 
-    private static void send(KafkaProducer producer, ProducerRecord record){
+    private void send(KafkaProducer producer, ProducerRecord record){
 
         producer.send(record, new Callback() {
             @Override
