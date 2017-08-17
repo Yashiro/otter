@@ -68,7 +68,7 @@ public class RocketMQSender implements InitializingBean {
                     queueContent.setId(delEventData.getKeys().get(0).getColumnValue());
                     Map<String, String> columns = Maps.newConcurrentMap();
                     for (EventColumn delEventColumn : delEventData.getColumns()) {
-                        columns.put(delEventColumn.getColumnName(), delEventColumn.getColumnValue());
+                        columns.put(delEventColumn.getColumnName(), delEventColumn.getColumnValue() != null ? delEventColumn.getColumnValue() : "");
                     }
                     queueContent.setColumns(columns);
                     queueContent.setCurrentTime(new Date());
@@ -86,7 +86,7 @@ public class RocketMQSender implements InitializingBean {
                     queueContent.setId(addEventData.getKeys().get(0).getColumnValue());
                     Map<String, String> columns = Maps.newConcurrentMap();
                     for (EventColumn addEventColumn : addEventData.getColumns()) {
-                        columns.put(addEventColumn.getColumnName(), addEventColumn.getColumnValue());
+                        columns.put(addEventColumn.getColumnName(), addEventColumn.getColumnValue() != null ? addEventColumn.getColumnValue() : "");
                     }
                     queueContent.setColumns(columns);
                     queueContent.setCurrentTime(new Date());
@@ -104,7 +104,7 @@ public class RocketMQSender implements InitializingBean {
                     queueContent.setId(updEventData.getKeys().get(0).getColumnValue());
                     Map<String, String> columns = Maps.newConcurrentMap();
                     for (EventColumn updEventColumn : updEventData.getColumns()) {
-                        columns.put(updEventColumn.getColumnName(), updEventColumn.getColumnValue());
+                        columns.put(updEventColumn.getColumnName(), updEventColumn.getColumnValue() != null ? updEventColumn.getColumnValue() : "");
                     }
                     queueContent.setColumns(columns);
                     queueContent.setCurrentTime(new Date());
