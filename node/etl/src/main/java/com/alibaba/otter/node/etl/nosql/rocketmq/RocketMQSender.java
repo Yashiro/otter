@@ -38,7 +38,7 @@ public class RocketMQSender implements InitializingBean {
     @Value("${producerGroup}")
     private String producerGroup;
 
-    private DefaultMQProducer producer = null;
+    private DefaultMQProducer producer;
 
     @Override
     public void afterPropertiesSet() throws Exception {

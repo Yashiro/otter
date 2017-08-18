@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,14 +27,17 @@ import java.util.Properties;
  * @date 2017/8/15
  */
 @Component
-public class CommitQueue {
+public class CommitQueue implements InitializingBean {
 
     private static Logger LOG = LoggerFactory.getLogger(CommitQueue.class);
 
     @Value("${broker.list}")
     private String brokerList;
 
-    public void sourceDataTransforQueue(DbLoadData dbLoadData) {
+    private KafkaProducer<String, String> producer;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         Properties props = new Properties();
         props.put("bootstrap.servers", brokerList);
 
@@ -42,8 +46,10 @@ public class CommitQueue {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
+        producer = new KafkaProducer<String, String>(props);
+    }
 
+    public void sourceDataTransforQueue(DbLoadData dbLoadData) {
         for (DbLoadData.TableLoadData tableLoadData : dbLoadData.getTables()) {
             List<EventData> deleteDatas  = tableLoadData.getDeleteDatas();
             List<EventData> insertDatas  = tableLoadData.getInsertDatas();
